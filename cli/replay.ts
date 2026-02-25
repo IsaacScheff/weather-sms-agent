@@ -1,7 +1,7 @@
 import { loadConfig } from '../src/utils/config.js';
-import { FileTraceStore } from '../src/trace/fileStore.js';
 import { runAgent } from '../src/agent/orchestrator.js';
 import { OpenMeteoProvider } from '../src/weather/openMeteoProvider.js';
+import { createTraceStore } from '../src/trace/storeFactory.js';
 
 const args = process.argv.slice(2);
 const liveIndex = args.indexOf('--live');
@@ -15,7 +15,7 @@ if (!traceId) {
 }
 
 const config = loadConfig();
-const traceStore = await FileTraceStore.create(config.TRACE_STORE_PATH);
+const traceStore = await createTraceStore(config);
 const trace = await traceStore.getTrace(traceId);
 
 if (!trace) {

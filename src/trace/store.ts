@@ -4,6 +4,7 @@ export type IdempotencyRecord = {
   messageSid: string;
   responseText: string;
   traceId: string;
+  senderHash?: string;
 };
 
 export type ConversationState = {

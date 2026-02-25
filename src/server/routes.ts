@@ -4,7 +4,7 @@ import type { TraceStore } from '../trace/store.js';
 import { runAgent } from '../agent/orchestrator.js';
 import { OpenMeteoProvider } from '../weather/openMeteoProvider.js';
 import { loadConfig } from '../utils/config.js';
-import { createLogger } from '../utils/logger.js';
+import { createLogger, hashPhone } from '../utils/logger.js';
 
 const metrics = {
   requests: 0,
@@ -83,6 +83,7 @@ export async function registerRoutes(app: FastifyInstance, traceStore: TraceStor
       messageSid: MessageSid,
       responseText: output.responseText,
       traceId: trace.trace_id,
+      senderHash: hashPhone(From),
     });
 
     logger.info({ trace_id: trace.trace_id }, 'sms_processed');

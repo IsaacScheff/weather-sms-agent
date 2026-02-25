@@ -40,6 +40,28 @@ flyctl tokens create deploy -a weather-sms-agent-staging
 
 2) Run the `deploy-staging` workflow from the Actions tab (manual trigger).
 
+### Postgres (optional)
+
+Local run (Docker):
+
+```bash
+docker run --name weather-sms-db -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=weather_sms -p 5432:5432 -d postgres:16
+export DATABASE_URL=postgres://postgres:postgres@localhost:5432/weather_sms
+pnpm migrate
+```
+
+Enable Postgres storage:
+
+```bash
+export TRACE_STORE_MODE=postgres
+export DATABASE_URL=postgres://postgres:postgres@localhost:5432/weather_sms
+```
+
+Staging on Fly:
+1) Provision a Postgres database (Fly Postgres or managed) and obtain the connection string.
+2) Set it as a secret: `flyctl secrets set DATABASE_URL=... -a weather-sms-agent-staging`.
+3) Set `TRACE_STORE_MODE=postgres` in your staging app env.
+
 ## Environment Variables
 
 - `PORT` - server port (default 3000)
@@ -47,7 +69,8 @@ flyctl tokens create deploy -a weather-sms-agent-staging
 - `DEFAULT_LOCATION` - fallback location when user does not specify one
 - `FEATURE_INCLUDE_REF_ID` - include trace ID in SMS responses
 - `TRACE_STORE_PATH` - path to JSONL trace store
-- `TRACE_STORE_MODE` - trace store backend (`file` or `memory`, default `file`)
+- `TRACE_STORE_MODE` - trace store backend (`file`, `memory`, or `postgres`, default `file`)
+- `DATABASE_URL` - Postgres connection string (required for `TRACE_STORE_MODE=postgres`)
 - `MAX_INPUT_CHARS` - clamp long inbound messages
 
 ## Architecture Overview

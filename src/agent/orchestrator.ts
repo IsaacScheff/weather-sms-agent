@@ -29,13 +29,15 @@ export async function runAgent(
   const traceId = makeId('trace');
   const logger = createLogger({ trace_id: traceId });
   const body = input.body.slice(0, options.maxInputChars);
+  const senderHash = hashPhone(input.from);
+  const senderRedacted = redactPhone(input.from);
 
   const trace: Trace = {
     trace_id: traceId,
     created_at: nowIso(),
     input: {
-      from_hash: hashPhone(input.from),
-      from_redacted: redactPhone(input.from),
+      from_hash: senderHash,
+      from_redacted: senderRedacted,
       body,
       message_sid: input.messageSid,
       received_at: input.receivedAt,
@@ -87,11 +89,10 @@ export async function runAgent(
       throw new Error('Missing intent');
     }
     const resolvedIntent = intent;
-    const senderId = input.from?.trim() ?? null;
     const storedState = resolvedIntent.locationText
       ? undefined
-      : senderId
-        ? await options.traceStore.getConversationState(senderId)
+      : senderHash
+        ? await options.traceStore.getConversationState(senderHash)
         : undefined;
     const storedLocation = storedState?.last_location;
     const locationQuery = resolvedIntent.locationText ?? options.defaultLocation;
@@ -115,8 +116,8 @@ export async function runAgent(
       throw new Error('Missing location');
     }
     const resolvedLocation = location;
-    if (senderId && resolvedIntent.locationText) {
-      await options.traceStore.saveConversationState(senderId, {
+    if (senderHash && resolvedIntent.locationText) {
+      await options.traceStore.saveConversationState(senderHash, {
         last_location: resolvedLocation,
         updated_at: nowIso(),
       });

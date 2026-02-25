@@ -3,6 +3,7 @@ import { runAgent } from '../src/agent/orchestrator.js';
 import { MemoryTraceStore } from '../src/trace/memoryStore.js';
 import type { Location, WeatherSnapshot } from '../src/agent/types.js';
 import type { WeatherProvider } from '../src/weather/provider.js';
+import { hashPhone } from '../src/utils/logger.js';
 
 class StubProvider implements WeatherProvider {
   name = 'stub';
@@ -104,7 +105,7 @@ describe('conversation memory', () => {
       },
     );
 
-    const stored = await traceStore.getConversationState(sender);
+    const stored = await traceStore.getConversationState(hashPhone(sender)!);
     expect(stored?.last_location?.name).toContain('Seattle');
     expect(first.output.weather?.location_name).toContain('Seattle');
 
