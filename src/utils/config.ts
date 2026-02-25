@@ -9,6 +9,7 @@ const envSchema = z.object({
     .default('false')
     .transform((value) => value.toLowerCase() === 'true'),
   TRACE_STORE_PATH: z.string().default('./data/traces.jsonl'),
+  TRACE_STORE_MODE: z.enum(['file', 'memory']).default('file'),
   MAX_INPUT_CHARS: z
     .string()
     .default('400')

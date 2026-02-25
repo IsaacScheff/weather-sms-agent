@@ -30,6 +30,16 @@ pnpm evals
 
 Use `EVAL_MODE=fixture pnpm evals` to run without network calls using `evals/fixtures/`.
 
+### Staging deploy
+
+1) Create a Fly deploy token scoped to your staging app, then add it to GitHub Secrets as `FLY_API_TOKEN`:
+
+```bash
+flyctl tokens create deploy -a weather-sms-agent-staging
+```
+
+2) Run the `deploy-staging` workflow from the Actions tab (manual trigger).
+
 ## Environment Variables
 
 - `PORT` - server port (default 3000)
@@ -37,6 +47,7 @@ Use `EVAL_MODE=fixture pnpm evals` to run without network calls using `evals/fix
 - `DEFAULT_LOCATION` - fallback location when user does not specify one
 - `FEATURE_INCLUDE_REF_ID` - include trace ID in SMS responses
 - `TRACE_STORE_PATH` - path to JSONL trace store
+- `TRACE_STORE_MODE` - trace store backend (`file` or `memory`, default `file`)
 - `MAX_INPUT_CHARS` - clamp long inbound messages
 
 ## Architecture Overview
