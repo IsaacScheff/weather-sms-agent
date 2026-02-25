@@ -67,8 +67,8 @@ export async function runAgent(
         output: sanitizeOutput(result),
       });
       return result;
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Unknown error';
+    } catch (_error) {
+      const message = _error instanceof Error ? _error.message : 'Unknown error';
       trace.events.push({
         type: 'step_failed',
         step: name,
@@ -77,33 +77,71 @@ export async function runAgent(
         error: message,
       });
       logger.error({ step: name, error: message }, 'step_failed');
-      throw error;
+      throw _error;
     }
   };
 
   try {
     intent = await step('parseIntent', async () => parseIntent(body), { body });
-    const locationQuery = intent.locationText ?? options.defaultLocation;
-    location = await step('resolveLocation', async () => resolveLocation(locationQuery), {
-      query: locationQuery,
-    });
+    if (!intent) {
+      throw new Error('Missing intent');
+    }
+    const resolvedIntent = intent;
+    const senderId = input.from?.trim() ?? null;
+    const storedState = resolvedIntent.locationText
+      ? undefined
+      : senderId
+        ? await options.traceStore.getConversationState(senderId)
+        : undefined;
+    const storedLocation = storedState?.last_location;
+    const locationQuery = resolvedIntent.locationText ?? options.defaultLocation;
+    location = await step(
+      'resolveLocation',
+      async () => {
+        if (resolvedIntent.locationText) {
+          return resolveLocation(locationQuery);
+        }
+        if (storedLocation) {
+          return storedLocation;
+        }
+        return resolveLocation(locationQuery);
+      },
+      {
+      query: resolvedIntent.locationText ?? storedLocation?.name ?? options.defaultLocation,
+      source: resolvedIntent.locationText ? 'message' : storedLocation ? 'memory' : 'default',
+      },
+    );
+    if (!location) {
+      throw new Error('Missing location');
+    }
+    const resolvedLocation = location;
+    if (senderId && resolvedIntent.locationText) {
+      await options.traceStore.saveConversationState(senderId, {
+        last_location: resolvedLocation,
+        updated_at: nowIso(),
+      });
+    }
     weather = await step(
       'fetchWeather',
       async () =>
         fetchWeather({
           provider: options.weatherProvider,
-          location,
-          date: intent.date,
+          location: resolvedLocation,
+          date: resolvedIntent.date,
           recordedWeather: options.replay?.recordedWeather,
           useRecorded: options.replay?.useRecordedWeather,
         }),
-      { location: location.name, date: intent.date, provider: options.weatherProvider.name },
+      { location: resolvedLocation.name, date: resolvedIntent.date, provider: options.weatherProvider.name },
     );
+    if (!weather) {
+      throw new Error('Missing weather');
+    }
+    const resolvedWeather = weather;
 
     const responseText = await step('generateRecommendation', async () =>
       generateRecommendation({
-        intent,
-        weather,
+        intent: resolvedIntent,
+        weather: resolvedWeather,
         includeRefId: options.includeRefId,
         traceId,
       }),
@@ -111,16 +149,16 @@ export async function runAgent(
 
     trace.output = {
       response_text: responseText,
-      weather_snapshot: weather,
+      weather_snapshot: resolvedWeather,
     };
 
     await options.traceStore.saveTrace(trace);
 
     return {
-      output: { responseText, weather },
+      output: { responseText, weather: resolvedWeather },
       trace,
     };
-  } catch (error) {
+  } catch {
     const responseText =
       'Sorry, I could not retrieve the forecast right now. Please try again soon.';
     trace.output = { response_text: responseText };

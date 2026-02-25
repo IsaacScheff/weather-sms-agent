@@ -18,12 +18,16 @@ function percent(value: number): string {
 export function generateRecommendation(options: RecommendationOptions): string {
   const { intent, weather, includeRefId, traceId } = options;
   const suggestions: string[] = [];
+  const conditionLower = weather.condition_summary.toLowerCase();
 
-  if (weather.precip_prob >= 0.4) {
-    suggestions.push('Bring an umbrella or rain jacket');
+  if (weather.precip_prob >= 0.4 || conditionLower.includes('rain') || conditionLower.includes('thunderstorm')) {
+    suggestions.push('Bring an umbrella');
+  }
+  if (conditionLower.includes('snow')) {
+    suggestions.push('Snow gear advised');
   }
   if (weather.temp_high_c >= 28) {
-    suggestions.push('Light breathable clothes + water');
+    suggestions.push('Light clothes and water');
   }
   if (weather.temp_low_c <= 5) {
     suggestions.push('Warm layers and a jacket');
@@ -32,11 +36,11 @@ export function generateRecommendation(options: RecommendationOptions): string {
     suggestions.push('Windy: secure hats and outer layers');
   }
 
-  if (suggestions.length < 2) {
+  while (suggestions.length < 2) {
     suggestions.push('Comfortable shoes');
   }
 
-  const activityHint = intent.activity ? ` for your ${intent.activity}` : '';
+  const activityHint = intent.activity ? ` Good for your ${intent.activity}.` : '';
 
   let activitySuggestion = 'Good for outdoor plans.';
   if (weather.precip_prob >= 0.6) {
@@ -46,9 +50,9 @@ export function generateRecommendation(options: RecommendationOptions): string {
   }
 
   const summary = `${weather.condition_summary}. High ${formatTemp(weather.temp_high_c)} / Low ${formatTemp(weather.temp_low_c)}. Rain chance ${percent(weather.precip_prob)}.`;
-  const advice = `${suggestions.slice(0, 2).join(' · ')}${activityHint}.`;
+  const advice = `${suggestions.slice(0, 2).join(' · ')}.`;
 
-  let message = `${summary} ${advice} ${activitySuggestion}`.trim();
+  let message = `${summary} ${advice}${activityHint} ${activitySuggestion}`.trim();
 
   if (includeRefId && traceId) {
     message = `${message} (ref: ${traceId})`;

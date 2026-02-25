@@ -8,9 +8,21 @@ const jsonFlagIndex = args.indexOf('--json');
 const jsonOutput = jsonFlagIndex !== -1;
 if (jsonOutput) args.splice(jsonFlagIndex, 1);
 
+const fromFlagIndex = args.indexOf('--from');
+let senderId = 'sim_sender_0001';
+if (fromFlagIndex !== -1) {
+  const provided = args[fromFlagIndex + 1];
+  if (!provided) {
+    console.error('Usage: pnpm sim "weather in Brooklyn tomorrow" [--from +15555550123] [--json]');
+    process.exit(1);
+  }
+  senderId = provided;
+  args.splice(fromFlagIndex, 2);
+}
+
 const input = args.join(' ').trim();
 if (!input) {
-  console.error('Usage: pnpm sim "weather in Brooklyn tomorrow" [--json]');
+  console.error('Usage: pnpm sim "weather in Brooklyn tomorrow" [--from +15555550123] [--json]');
   process.exit(1);
 }
 
@@ -19,7 +31,7 @@ const traceStore = await FileTraceStore.create(config.TRACE_STORE_PATH);
 
 const { output, trace } = await runAgent(
   {
-    from: '+15555550123',
+    from: senderId,
     body: input,
     messageSid: `SIM_${Date.now()}`,
     receivedAt: new Date().toISOString(),

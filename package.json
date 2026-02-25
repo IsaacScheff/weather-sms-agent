@@ -14,7 +14,8 @@
     "test": "vitest run",
     "evals": "tsx evals/runEvals.ts",
     "sim": "tsx cli/simulate.ts",
-    "replay": "tsx cli/replay.ts"
+    "replay": "tsx cli/replay.ts",
+    "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm evals"
   },
   "dependencies": {
     "@fastify/formbody": "^8.0.1",
@@ -25,10 +26,13 @@
   "devDependencies": {
     "@eslint/js": "^9.17.0",
     "@types/node": "^22.10.1",
+    "@typescript-eslint/eslint-plugin": "^8.56.1",
+    "@typescript-eslint/parser": "^8.56.1",
     "eslint": "^9.17.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-unicorn": "^56.0.1",
+    "globals": "^17.3.0",
     "prettier": "^3.4.2",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2",

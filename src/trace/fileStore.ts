@@ -1,13 +1,14 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import type { Trace } from '../agent/types.js';
-import type { IdempotencyRecord, TraceStore } from './store.js';
+import type { ConversationState, IdempotencyRecord, TraceStore } from './store.js';
 
 export class FileTraceStore implements TraceStore {
   private traces = new Map<string, Trace>();
   private idempotency = new Map<string, IdempotencyRecord>();
+  private conversations = new Map<string, ConversationState>();
 
-  private constructor(private readonly filePath: string) {}
+  private constructor(private readonly _filePath: string) {}
 
   static async create(filePath: string): Promise<FileTraceStore> {
     const store = new FileTraceStore(filePath);
@@ -16,13 +17,23 @@ export class FileTraceStore implements TraceStore {
   }
 
   private async init(): Promise<void> {
-    const dir = path.dirname(this.filePath);
+    const dir = path.dirname(this._filePath);
     await fs.mkdir(dir, { recursive: true });
     try {
-      const data = await fs.readFile(this.filePath, 'utf8');
+      const data = await fs.readFile(this._filePath, 'utf8');
       const lines = data.split('\n').filter((line) => line.trim().length > 0);
       for (const line of lines) {
-        const trace = JSON.parse(line) as Trace;
+        const record = JSON.parse(line) as
+          | Trace
+          | { record_type: 'conversation_state'; sender_id: string; state: ConversationState };
+        if ('record_type' in record && record.record_type === 'conversation_state') {
+          this.conversations.set(record.sender_id, record.state);
+          continue;
+        }
+        const trace = record as Trace;
+        if (!trace.trace_id) {
+          continue;
+        }
         this.traces.set(trace.trace_id, trace);
         if (trace.idempotency_key && trace.output?.response_text) {
           this.idempotency.set(trace.idempotency_key, {
@@ -49,7 +60,7 @@ export class FileTraceStore implements TraceStore {
       });
     }
     const line = `${JSON.stringify(trace)}\n`;
-    await fs.appendFile(this.filePath, line, 'utf8');
+    await fs.appendFile(this._filePath, line, 'utf8');
   }
 
   async getTrace(traceId: string): Promise<Trace | undefined> {
@@ -62,5 +73,15 @@ export class FileTraceStore implements TraceStore {
 
   async saveIdempotency(record: IdempotencyRecord): Promise<void> {
     this.idempotency.set(record.messageSid, record);
+  }
+
+  async getConversationState(senderId: string): Promise<ConversationState | undefined> {
+    return this.conversations.get(senderId);
+  }
+
+  async saveConversationState(senderId: string, state: ConversationState): Promise<void> {
+    this.conversations.set(senderId, state);
+    const line = `${JSON.stringify({ record_type: 'conversation_state', sender_id: senderId, state })}\n`;
+    await fs.appendFile(this._filePath, line, 'utf8');
   }
 }

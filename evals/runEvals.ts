@@ -16,9 +16,9 @@ type EvalCase = {
 
 class MockWeatherProvider implements WeatherProvider {
   name = 'mock';
-  constructor(private readonly snapshot: WeatherSnapshot) {}
+  constructor(private readonly _snapshot: WeatherSnapshot) {}
   async getForecast(): Promise<WeatherSnapshot> {
-    return this.snapshot;
+    return this._snapshot;
   }
 }
 

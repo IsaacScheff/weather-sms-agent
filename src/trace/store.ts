@@ -1,4 +1,4 @@
-import type { Trace } from '../agent/types.js';
+import type { Location, Trace } from '../agent/types.js';
 
 export type IdempotencyRecord = {
   messageSid: string;
@@ -6,9 +6,16 @@ export type IdempotencyRecord = {
   traceId: string;
 };
 
+export type ConversationState = {
+  last_location?: Location;
+  updated_at: string;
+};
+
 export interface TraceStore {
-  saveTrace(trace: Trace): Promise<void>;
-  getTrace(traceId: string): Promise<Trace | undefined>;
-  getIdempotency(messageSid: string): Promise<IdempotencyRecord | undefined>;
-  saveIdempotency(record: IdempotencyRecord): Promise<void>;
+  saveTrace(_trace: Trace): Promise<void>;
+  getTrace(_traceId: string): Promise<Trace | undefined>;
+  getIdempotency(_messageSid: string): Promise<IdempotencyRecord | undefined>;
+  saveIdempotency(_record: IdempotencyRecord): Promise<void>;
+  getConversationState(_senderId: string): Promise<ConversationState | undefined>;
+  saveConversationState(_senderId: string, _state: ConversationState): Promise<void>;
 }
