@@ -28,6 +28,8 @@ pnpm test
 pnpm evals
 ```
 
+Use `EVAL_MODE=fixture pnpm evals` to run without network calls using `evals/fixtures/`.
+
 ## Environment Variables
 
 - `PORT` - server port (default 3000)

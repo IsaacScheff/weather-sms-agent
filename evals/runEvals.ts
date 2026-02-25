@@ -2,7 +2,7 @@ import fs from 'node:fs/promises';
 import { runAgent } from '../src/agent/orchestrator.js';
 import { MemoryTraceStore } from '../src/trace/memoryStore.js';
 import type { WeatherProvider } from '../src/weather/provider.js';
-import type { WeatherSnapshot } from '../src/agent/types.js';
+import type { Location, WeatherSnapshot } from '../src/agent/types.js';
 import { loadConfig } from '../src/utils/config.js';
 
 type EvalCase = {
@@ -20,6 +20,38 @@ class MockWeatherProvider implements WeatherProvider {
   async getForecast(): Promise<WeatherSnapshot> {
     return this._snapshot;
   }
+}
+
+class FixtureWeatherProvider implements WeatherProvider {
+  name = 'fixture';
+  constructor(private readonly fixtures: Record<string, WeatherSnapshot>) {}
+  async getForecast(location: Location, date: string): Promise<WeatherSnapshot> {
+    const key = `${location.name}|${date}`;
+    const snapshot = this.fixtures[key];
+    if (!snapshot) {
+      throw new Error(
+        `Missing weather fixture for "${key}". Add it to evals/fixtures/weather.json.`,
+      );
+    }
+    return snapshot;
+  }
+}
+
+async function loadWeatherFixtures(): Promise<Record<string, WeatherSnapshot>> {
+  const fileUrl = new URL('./fixtures/weather.json', import.meta.url);
+  const raw = await fs.readFile(fileUrl, 'utf8');
+  return JSON.parse(raw) as Record<string, WeatherSnapshot>;
+}
+
+const evalMode = process.env.EVAL_MODE ?? 'live';
+if (evalMode !== 'live' && evalMode !== 'fixture') {
+  throw new Error(`Unsupported EVAL_MODE: ${evalMode}`);
+}
+
+if (evalMode === 'fixture') {
+  globalThis.fetch = (async () => {
+    throw new Error('Network disabled in EVAL_MODE=fixture');
+  }) as typeof fetch;
 }
 
 function loadDataset(raw: string): EvalCase[] {
@@ -58,15 +90,20 @@ const datasetPath = new URL('./dataset.jsonl', import.meta.url);
 const raw = await fs.readFile(datasetPath, 'utf8');
 const cases = loadDataset(raw);
 const config = loadConfig();
+const fixtureProvider = evalMode === 'fixture'
+  ? new FixtureWeatherProvider(await loadWeatherFixtures())
+  : null;
 
 let failedHigh = false;
 const results: Array<{ id: string; failures: string[] }> = [];
 
 for (const evalCase of cases) {
   const traceStore = new MemoryTraceStore();
-  const provider = evalCase.mock_weather
-    ? new MockWeatherProvider(evalCase.mock_weather)
-    : null;
+  const provider = evalMode === 'fixture'
+    ? fixtureProvider
+    : evalCase.mock_weather
+      ? new MockWeatherProvider(evalCase.mock_weather)
+      : null;
 
   const { output } = await runAgent(
     {

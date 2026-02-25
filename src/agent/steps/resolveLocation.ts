@@ -1,3 +1,4 @@
+import fs from 'node:fs/promises';
 import { fetchJson } from '../../utils/http.js';
 import { loadConfig } from '../../utils/config.js';
 import type { Location } from '../types.js';
@@ -13,6 +14,14 @@ type GeocodeResponse = {
 };
 
 const cache = new Map<string, Location>();
+let fixtureLocationsCache: Record<string, FixtureLocation> | null = null;
+
+type FixtureLocation = {
+  name: string;
+  lat: number;
+  lon: number;
+  tz?: string;
+};
 
 const aliasMap: Record<string, string> = {
   nyc: 'New York, NY',
@@ -44,6 +53,19 @@ function sanitizeLocationText(raw: string): string {
   return text;
 }
 
+async function loadLocationFixtures(): Promise<Record<string, FixtureLocation>> {
+  if (fixtureLocationsCache) return fixtureLocationsCache;
+  const fileUrl = new URL('../../../evals/fixtures/locations.json', import.meta.url);
+  const raw = await fs.readFile(fileUrl, 'utf8');
+  const parsed = JSON.parse(raw) as Record<string, FixtureLocation>;
+  const normalized: Record<string, FixtureLocation> = {};
+  for (const [key, value] of Object.entries(parsed)) {
+    normalized[normalizeKey(key)] = value;
+  }
+  fixtureLocationsCache = normalized;
+  return normalized;
+}
+
 async function geocode(name: string): Promise<Location | undefined> {
   const url = new URL('https://geocoding-api.open-meteo.com/v1/search');
   url.searchParams.set('name', name);
@@ -68,6 +90,30 @@ async function geocode(name: string): Promise<Location | undefined> {
 export async function resolveLocation(
   locationText: string,
 ): Promise<Location> {
+  const evalMode = process.env.EVAL_MODE ?? 'live';
+  if (evalMode === 'fixture') {
+    const raw = locationText.trim();
+    const sanitized = sanitizeLocationText(raw);
+    const fixtures = await loadLocationFixtures();
+    const candidates = [sanitized, raw].filter((value) => value && value.trim().length > 0);
+    for (const candidate of candidates) {
+      const fixture = fixtures[normalizeKey(candidate)];
+      if (fixture) {
+        return {
+          name: fixture.name,
+          latitude: fixture.lat,
+          longitude: fixture.lon,
+        };
+      }
+    }
+    throw new Error(
+      `Missing location fixture for "${locationText}". Add it to evals/fixtures/locations.json.`,
+    );
+  }
+  if (evalMode !== 'live') {
+    throw new Error(`Unsupported EVAL_MODE: ${evalMode}`);
+  }
+
   const key = normalizeKey(locationText);
   if (cache.has(key)) {
     return cache.get(key)!;

@@ -25,3 +25,5 @@ jobs:
 
       - name: Run quality gate
         run: pnpm check
+        env:
+          EVAL_MODE: fixture

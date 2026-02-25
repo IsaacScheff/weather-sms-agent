@@ -1,0 +1,19 @@
+{
+  "seattle": { "name": "Seattle, WA", "lat": 47.61, "lon": -122.33 },
+  "san diego": { "name": "San Diego, CA", "lat": 32.72, "lon": -117.16 },
+  "phoenix": { "name": "Phoenix, AZ", "lat": 33.45, "lon": -112.07 },
+  "minneapolis": { "name": "Minneapolis, MN", "lat": 44.98, "lon": -93.27 },
+  "chicago": { "name": "Chicago, IL", "lat": 41.88, "lon": -87.63 },
+  "miami": { "name": "Miami, FL", "lat": 25.76, "lon": -80.19 },
+  "boston": { "name": "Boston, MA", "lat": 42.36, "lon": -71.06 },
+  "nyc": { "name": "New York, NY", "lat": 40.71, "lon": -74.01 },
+  "new york": { "name": "New York, NY", "lat": 40.71, "lon": -74.01 },
+  "new york, ny": { "name": "New York, NY", "lat": 40.71, "lon": -74.01 },
+  "portland": { "name": "Portland, OR", "lat": 45.52, "lon": -122.68 },
+  "austin": { "name": "Austin, TX", "lat": 30.27, "lon": -97.74 },
+  "denver": { "name": "Denver, CO", "lat": 39.74, "lon": -104.99 },
+  "nashville": { "name": "Nashville, TN", "lat": 36.16, "lon": -86.78 },
+  "las vegas": { "name": "Las Vegas, NV", "lat": 36.17, "lon": -115.14 },
+  "atlanta": { "name": "Atlanta, GA", "lat": 33.75, "lon": -84.39 },
+  "boise": { "name": "Boise, ID", "lat": 43.62, "lon": -116.2 }
+}
