@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "tsx watch src/server/index.ts",
     "start": "node dist/server/index.js",
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.build.json",
     "lint": "eslint .",
     "format": "prettier --write .",
     "typecheck": "tsc -p tsconfig.json --noEmit",
