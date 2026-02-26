@@ -8,7 +8,7 @@ FROM node:20-slim AS build
 WORKDIR /app
 RUN corepack enable
 COPY --from=deps /app/node_modules /app/node_modules
-COPY package.json pnpm-lock.yaml tsconfig.json ./
+COPY package.json pnpm-lock.yaml tsconfig.json tsconfig.build.json ./
 COPY src ./src
 RUN pnpm build
 
