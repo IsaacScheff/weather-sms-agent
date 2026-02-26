@@ -94,6 +94,23 @@ export async function resolveLocation(
   if (evalMode === 'fixture') {
     const raw = locationText.trim();
     const sanitized = sanitizeLocationText(raw);
+    const lowered = normalizeKey(sanitized);
+    const defaultLocation = loadConfig().DEFAULT_LOCATION;
+    if (!sanitized || ['today', 'tomorrow', 'tonight'].includes(lowered)) {
+      const fallback = normalizeKey(defaultLocation);
+      const fixtures = await loadLocationFixtures();
+      const fixture = fixtures[fallback];
+      if (!fixture) {
+        throw new Error(
+          `Missing location fixture for DEFAULT_LOCATION "${defaultLocation}". Add it to evals/fixtures/locations.json.`,
+        );
+      }
+      return {
+        name: fixture.name,
+        latitude: fixture.lat,
+        longitude: fixture.lon,
+      };
+    }
     const fixtures = await loadLocationFixtures();
     const candidates = [sanitized, raw].filter((value) => value && value.trim().length > 0);
     for (const candidate of candidates) {

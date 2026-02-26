@@ -3,13 +3,26 @@ import type { Intent } from '../types.js';
 
 const activities = ['hike', 'run', 'work', 'walk', 'picnic', 'bike', 'commute'];
 
-export function parseIntent(body: string, now: Date = new Date()): Intent {
+function resolveNow(now?: Date): Date {
+  if (now) return now;
+  const fixed = process.env.EVAL_FIXED_DATE;
+  if (fixed) {
+    const parsed = new Date(fixed);
+    if (!Number.isNaN(parsed.getTime())) {
+      return parsed;
+    }
+  }
+  return new Date();
+}
+
+export function parseIntent(body: string, now?: Date): Intent {
+  const reference = resolveNow(now);
   const normalized = body.trim();
   const lower = normalized.toLowerCase();
 
-  let date = toDateString(now);
+  let date = toDateString(reference);
   if (lower.includes('tomorrow')) {
-    date = toDateString(addDays(now, 1));
+    date = toDateString(addDays(reference, 1));
   }
 
   let activity: string | undefined;

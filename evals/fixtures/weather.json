@@ -1,133 +1,133 @@
 {
-  "Seattle, WA|2026-02-25": {
+  "Seattle, WA|2026-01-15": {
     "location_name": "Seattle, WA",
-    "date": "2026-02-25",
+    "date": "2026-01-15",
     "temp_high_c": 12,
     "temp_low_c": 6,
     "precip_prob": 0.8,
     "wind_kph": 12,
     "condition_summary": "Rain"
   },
-  "San Diego, CA|2026-02-25": {
+  "San Diego, CA|2026-01-15": {
     "location_name": "San Diego, CA",
-    "date": "2026-02-25",
+    "date": "2026-01-15",
     "temp_high_c": 22,
     "temp_low_c": 14,
     "precip_prob": 0.1,
     "wind_kph": 8,
     "condition_summary": "Clear sky"
   },
-  "Phoenix, AZ|2026-02-26": {
+  "Phoenix, AZ|2026-01-16": {
     "location_name": "Phoenix, AZ",
-    "date": "2026-02-26",
+    "date": "2026-01-16",
     "temp_high_c": 36,
     "temp_low_c": 22,
     "precip_prob": 0.05,
     "wind_kph": 10,
     "condition_summary": "Clear sky"
   },
-  "Minneapolis, MN|2026-02-25": {
+  "Minneapolis, MN|2026-01-15": {
     "location_name": "Minneapolis, MN",
-    "date": "2026-02-25",
+    "date": "2026-01-15",
     "temp_high_c": 2,
     "temp_low_c": -6,
     "precip_prob": 0.2,
     "wind_kph": 15,
     "condition_summary": "Overcast"
   },
-  "Chicago, IL|2026-02-25": {
+  "Chicago, IL|2026-01-15": {
     "location_name": "Chicago, IL",
-    "date": "2026-02-25",
+    "date": "2026-01-15",
     "temp_high_c": 10,
     "temp_low_c": 3,
     "precip_prob": 0.2,
     "wind_kph": 40,
     "condition_summary": "Partly cloudy"
   },
-  "Miami, FL|2026-02-25": {
+  "Miami, FL|2026-01-15": {
     "location_name": "Miami, FL",
-    "date": "2026-02-25",
+    "date": "2026-01-15",
     "temp_high_c": 28,
     "temp_low_c": 23,
     "precip_prob": 0.9,
     "wind_kph": 25,
     "condition_summary": "Thunderstorm"
   },
-  "Boston, MA|2026-02-26": {
+  "Boston, MA|2026-01-16": {
     "location_name": "Boston, MA",
-    "date": "2026-02-26",
+    "date": "2026-01-16",
     "temp_high_c": 15,
     "temp_low_c": 7,
     "precip_prob": 0.2,
     "wind_kph": 12,
     "condition_summary": "Partly cloudy"
   },
-  "New York, NY|2026-02-25": {
+  "New York, NY|2026-01-15": {
     "location_name": "New York, NY",
-    "date": "2026-02-25",
+    "date": "2026-01-15",
     "temp_high_c": 6,
     "temp_low_c": 0,
     "precip_prob": 0.3,
     "wind_kph": 18,
     "condition_summary": "Overcast"
   },
-  "Portland, OR|2026-02-25": {
+  "Portland, OR|2026-01-15": {
     "location_name": "Portland, OR",
-    "date": "2026-02-25",
+    "date": "2026-01-15",
     "temp_high_c": 11,
     "temp_low_c": 5,
     "precip_prob": 0.5,
     "wind_kph": 10,
     "condition_summary": "Rain"
   },
-  "Austin, TX|2026-02-26": {
+  "Austin, TX|2026-01-16": {
     "location_name": "Austin, TX",
-    "date": "2026-02-26",
+    "date": "2026-01-16",
     "temp_high_c": 26,
     "temp_low_c": 18,
     "precip_prob": 0.15,
     "wind_kph": 9,
     "condition_summary": "Mostly clear"
   },
-  "Denver, CO|2026-02-25": {
+  "Denver, CO|2026-01-15": {
     "location_name": "Denver, CO",
-    "date": "2026-02-25",
+    "date": "2026-01-15",
     "temp_high_c": 1,
     "temp_low_c": -4,
     "precip_prob": 0.7,
     "wind_kph": 20,
     "condition_summary": "Snow"
   },
-  "Nashville, TN|2026-02-25": {
+  "Nashville, TN|2026-01-15": {
     "location_name": "Nashville, TN",
-    "date": "2026-02-25",
+    "date": "2026-01-15",
     "temp_high_c": 19,
     "temp_low_c": 11,
     "precip_prob": 0.25,
     "wind_kph": 8,
     "condition_summary": "Partly cloudy"
   },
-  "Las Vegas, NV|2026-02-25": {
+  "Las Vegas, NV|2026-01-15": {
     "location_name": "Las Vegas, NV",
-    "date": "2026-02-25",
+    "date": "2026-01-15",
     "temp_high_c": 38,
     "temp_low_c": 24,
     "precip_prob": 0.05,
     "wind_kph": 12,
     "condition_summary": "Clear sky"
   },
-  "Atlanta, GA|2026-02-26": {
+  "Atlanta, GA|2026-01-16": {
     "location_name": "Atlanta, GA",
-    "date": "2026-02-26",
+    "date": "2026-01-16",
     "temp_high_c": 17,
     "temp_low_c": 9,
     "precip_prob": 0.6,
     "wind_kph": 14,
     "condition_summary": "Rain"
   },
-  "Boise, ID|2026-02-25": {
+  "Boise, ID|2026-01-15": {
     "location_name": "Boise, ID",
-    "date": "2026-02-25",
+    "date": "2026-01-15",
     "temp_high_c": 13,
     "temp_low_c": 4,
     "precip_prob": 0.2,

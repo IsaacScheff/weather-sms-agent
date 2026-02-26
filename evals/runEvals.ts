@@ -49,6 +49,7 @@ if (evalMode !== 'live' && evalMode !== 'fixture') {
 }
 
 if (evalMode === 'fixture') {
+  process.env.EVAL_FIXED_DATE = process.env.EVAL_FIXED_DATE ?? '2026-01-15T00:00:00Z';
   globalThis.fetch = (async () => {
     throw new Error('Network disabled in EVAL_MODE=fixture');
   }) as typeof fetch;
