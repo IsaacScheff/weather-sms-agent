@@ -7,7 +7,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 function migrationsDir(): string {
-  return path.resolve(__dirname, '../../../../migrations');
+  return path.resolve(__dirname, '../../../', 'migrations');
 }
 
 export async function applyMigrations(databaseUrl: string): Promise<void> {
