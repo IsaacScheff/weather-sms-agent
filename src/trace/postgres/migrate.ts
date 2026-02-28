@@ -48,3 +48,26 @@ export async function applyMigrations(databaseUrl: string): Promise<void> {
     await pool.end();
   }
 }
+
+const isMain =
+  typeof require !== 'undefined' && typeof module !== 'undefined'
+    ? require.main === module
+    : process.argv[1] != null &&
+      fileURLToPath(import.meta.url) === path.resolve(process.argv[1]);
+
+if (isMain) {
+  const databaseUrl = process.env.DATABASE_URL;
+  if (!databaseUrl) {
+    console.error('DATABASE_URL is not set.');
+    process.exit(1);
+  }
+  applyMigrations(databaseUrl)
+    .then(() => {
+      console.log('Migrations applied.');
+      process.exit(0);
+    })
+    .catch((error) => {
+      console.error(error);
+      process.exit(1);
+    });
+}
